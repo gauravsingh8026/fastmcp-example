@@ -1,0 +1,16 @@
+# MCP Server
+fastmcp
+requests
+tavily-python
+
+# Environment configuration
+python-dotenv
+
+# LangChain and LangGraph
+langchain
+langchain-openai
+langchain-core
+langgraph
+
+# MCP Client Adapter
+langchain-mcp-adapters
