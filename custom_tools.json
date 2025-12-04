@@ -1,0 +1,94 @@
+[
+  {
+    "name": "get_order_details",
+    "description": "Fetches order details from ecommerce API by order ID",
+    "base_url": "https://api.ecommerce.com/orders/{order_id}",
+    "method": "GET",
+    "headers": {
+      "Authorization": "Bearer {api_token}",
+      "Content-Type": "application/json"
+    },
+    "parameters": [
+      {
+        "name": "order_id",
+        "type": "string",
+        "required": true,
+        "description": "The unique identifier of the order"
+      },
+      {
+        "name": "api_token",
+        "type": "string",
+        "required": true,
+        "description": "API authentication token"
+      }
+    ],
+    "response_transform": "json"
+  },
+  {
+    "name": "create_product",
+    "description": "Creates a new product in the ecommerce system",
+    "base_url": "https://api.ecommerce.com/products",
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer {api_token}",
+      "Content-Type": "application/json"
+    },
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "required": true,
+        "description": "Product name"
+      },
+      {
+        "name": "price",
+        "type": "number",
+        "required": true,
+        "description": "Product price in USD"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "required": false,
+        "description": "Product description"
+      },
+      {
+        "name": "api_token",
+        "type": "string",
+        "required": true,
+        "description": "API authentication token"
+      }
+    ],
+    "body_template": {
+      "name": "{name}",
+      "price": "{price}",
+      "description": "{description}"
+    },
+    "response_transform": "json"
+  },
+  {
+    "name": "get_github_repo_info",
+    "description": "Fetches information about a GitHub repository",
+    "base_url": "https://api.github.com/repos/{owner}/{repo}",
+    "method": "GET",
+    "headers": {
+      "Accept": "application/vnd.github.v3+json"
+    },
+    "parameters": [
+      {
+        "name": "owner",
+        "type": "string",
+        "required": true,
+        "description": "GitHub repository owner username"
+      },
+      {
+        "name": "repo",
+        "type": "string",
+        "required": true,
+        "description": "GitHub repository name"
+      }
+    ],
+    "response_transform": "json"
+  }
+]
+

@@ -2,6 +2,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from config.mcp_client import client
+from helper import get_system_prompt
 
 
 async def main():
@@ -20,22 +21,9 @@ async def main():
     # Bind tools with tool_choice to encourage tool use
     model_with_tools = model.bind_tools(tools)
     
-    # Create a list of tool descriptions for the system prompt
-    tool_descriptions = "\n".join([f"- {tool.name}: {tool.description}" for tool in tools])
-    
     messages = [
-        SystemMessage(content=f"""You are a helpful assistant with access to the following tools:
-
-{tool_descriptions}
-
-CRITICAL INSTRUCTIONS:
-- When the user asks you to use a tool, you MUST actually call it by making a tool call (not just say you will)
-- Tool calls are made automatically when you decide to use a tool - you don't need to describe the action first
-- After a tool is called, you will receive the results automatically
-- Then provide your answer based on the tool results
-
-Example: If user asks "search for AI news", immediately call the web_search tool with appropriate parameters."""),
-        HumanMessage(content="Call the web_search tool with query='latest AI news' to search for recent AI news articles."),
+        SystemMessage(content=get_system_prompt(tools)),
+        HumanMessage(content="Search for the latest AI news articles."),
     ]
     
     # Initial response
