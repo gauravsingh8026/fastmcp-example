@@ -9,6 +9,20 @@
 
 **Keywords:** MCP, Model Context Protocol, LangChain, LangGraph, AI Agents, FastMCP, Tavily, OpenAI, Python, Async, Workflow Automation, Machine Learning, LLM Integration, Agent Framework
 
+## 📚 Table of Contents
+
+- [Quick Start](#quick-start)
+- [Documentation](#-documentation)
+- [Overview](#overview)
+- [Features](#features)
+- [Setup](#setup)
+- [Project Structure](#project-structure)
+- [File Purposes](#file-purposes)
+- [Adding New Tools](#adding-new-tools)
+- [Examples](#examples)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+
 ## Quick Start
 
 ```bash
@@ -25,6 +39,13 @@ python server.py
 python langgraph_app.py
 ```
 
+## 📖 Documentation
+
+- **[Learning Path](docs/LEARNING_PATH.md)** - Step-by-step guide from beginner to advanced
+- **[Custom Tools Guide](docs/CUSTOM_TOOLS.md)** - Complete guide to creating custom API tools
+- **[Architecture Overview](docs/ARCHITECTURE.md)** - System design and component breakdown
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Quick lookup for common tasks
+
 ## Overview
 
 This project demonstrates a complete integration of **Model Context Protocol (MCP)** with **LangChain** and **LangGraph** for building production-ready AI agent workflows. It provides a working example of how to:
@@ -32,6 +53,7 @@ This project demonstrates a complete integration of **Model Context Protocol (MC
 - Create an MCP server that exposes custom tools
 - Integrate MCP tools with LangChain agents
 - Build multi-step workflows using LangGraph
+- Create custom tools from JSON configurations
 - Use web search, HTTP requests, and other tools in AI applications
 
 **What is MCP?** The Model Context Protocol is a standardized way for AI applications to access external tools and data sources, enabling more powerful and flexible AI agents.
@@ -40,12 +62,15 @@ This project demonstrates a complete integration of **Model Context Protocol (MC
 - **MCP Server** (`server.py`) - Exposes tools via the Model Context Protocol over HTTP
 - **LangGraph Application** (`langgraph_app.py`) - Demonstrates a multi-step workflow using MCP tools
 - **LangChain Client** (`langchain_client.py`) - Shows how to use MCP tools with LangChain agents
+- **Custom Tools** (`config/custom_tools.py`) - Create tools from JSON configurations
+- **Example: Custom Tools** (`example_custom_tools.py`) - Demonstrates custom tool usage
 
 ## Features
 
 - 🔧 **MCP Server** with multiple tools (web search, HTTP requests, math operations)
 - 🔗 **LangGraph Integration** - Multi-step agent workflows
 - 🤖 **LangChain Agents** - Tool-using AI agents
+- 🛠️ **Custom Tools** - Create tools from JSON configurations (no code required!)
 - 🔍 **Web Search** - Powered by Tavily API
 - 🌐 **HTTP Requests** - Generic HTTP client tool
 - ➕ **Math Operations** - Example tools (add, multiply)
@@ -119,14 +144,22 @@ The server is automatically started by the MCP client when using `stdio` transpo
 
 ```
 mcs-mcp/
-├── server.py              # MCP server with tool definitions
-├── langgraph_app.py       # LangGraph workflow example
-├── langchain_client.py    # LangChain agent example
+├── server.py                  # MCP server with tool definitions
+├── langgraph_app.py           # LangGraph workflow example
+├── langchain_client.py        # LangChain agent example (MCP tools)
+├── example_custom_tools.py    # Custom tools example
+├── custom_tools.json          # Custom tool configurations
+├── helper.py                  # Shared utilities
 ├── config/
-│   ├── config.py          # Environment configuration helpers
-│   └── mcp_client.py      # MCP client setup
-├── requirements.txt       # Python dependencies
-└── README.md             # This file
+│   ├── config.py              # Environment configuration helpers
+│   ├── mcp_client.py          # MCP client setup
+│   └── custom_tools.py        # Custom tool factory and loader
+├── docs/
+│   ├── LEARNING_PATH.md       # Step-by-step learning guide
+│   ├── CUSTOM_TOOLS.md        # Custom tools documentation
+│   └── ARCHITECTURE.md        # Architecture overview
+├── requirements.txt           # Python dependencies
+└── README.md                  # This file
 ```
 
 ## File Purposes
@@ -201,7 +234,54 @@ Shows how to use MCP tools with LangChain agents. It demonstrates:
 python langchain_client.py
 ```
 
+### `example_custom_tools.py` - Custom Tools Example
+
+Demonstrates how to use custom tools loaded from JSON configuration. It shows:
+- Loading custom tools from JSON
+- Merging MCP tools with custom tools
+- Using both tool types together
+- Tool invocation and result handling
+
+**Key Features:**
+- JSON-based tool configuration
+- Dynamic tool loading
+- Tool merging
+- Complete working example
+
+**Usage:**
+```bash
+python example_custom_tools.py
+```
+
+### Custom Tools System
+
+Create reusable API tools from JSON configurations without writing Python code.
+
+**Files:**
+- `custom_tools.json` - Tool configuration file
+- `config/custom_tools.py` - Tool factory and loader
+- `docs/CUSTOM_TOOLS.md` - Complete documentation
+
+**Quick Example:**
+```json
+{
+  "name": "get_order_details",
+  "description": "Fetches order details by ID",
+  "base_url": "https://api.example.com/orders/{order_id}",
+  "method": "GET",
+  "headers": {"Authorization": "Bearer {api_token}"},
+  "parameters": [
+    {"name": "order_id", "type": "string", "required": true},
+    {"name": "api_token", "type": "string", "required": true}
+  ]
+}
+```
+
+See [CUSTOM_TOOLS.md](docs/CUSTOM_TOOLS.md) for complete guide.
+
 ## Adding New Tools
+
+### Option 1: Add MCP Tool (Server-Side)
 
 To add a new tool to the MCP server:
 
@@ -215,7 +295,7 @@ def my_new_tool(param1: str, param2: int) -> dict:
     return {"result": "value"}
 ```
 
-2. **No client changes needed!** Tools are automatically discovered via the MCP protocol.
+2. **Restart the server** - Tools are automatically discovered via the MCP protocol.
 
 3. **Use in your applications**:
 
@@ -225,6 +305,37 @@ from config.mcp_client import get_tool_by_name
 tool = await get_tool_by_name("my_new_tool")
 result = await tool.ainvoke({"param1": "value", "param2": 42})
 ```
+
+### Option 2: Add Custom Tool (JSON Configuration)
+
+To add a custom tool from JSON (no code required):
+
+1. **Add tool configuration** to `custom_tools.json`:
+
+```json
+{
+  "name": "my_custom_tool",
+  "description": "Description of what the tool does",
+  "base_url": "https://api.example.com/endpoint/{param1}",
+  "method": "GET",
+  "parameters": [
+    {"name": "param1", "type": "string", "required": true}
+  ]
+}
+```
+
+2. **No restart needed!** Tools are loaded at runtime.
+
+3. **Use in your applications**:
+
+```python
+from config.custom_tools import get_all_tools
+
+tools = await get_all_tools()  # Includes MCP + custom tools
+# Tool is automatically available
+```
+
+See [CUSTOM_TOOLS.md](docs/CUSTOM_TOOLS.md) for complete guide.
 
 ## Configuration
 
@@ -269,7 +380,7 @@ python server.py
 python langgraph_app.py
 ```
 
-### Example 2: Use Tools Programmatically
+### Example 2: Use MCP Tools Programmatically
 
 ```python
 import asyncio
@@ -290,7 +401,32 @@ async def main():
 asyncio.run(main())
 ```
 
-### Example 3: Custom LangGraph Node
+### Example 3: Use Custom Tools
+
+```python
+import asyncio
+from config.custom_tools import get_all_tools
+from langchain_openai import ChatOpenAI
+
+async def main():
+    # Get all tools (MCP + custom)
+    tools = await get_all_tools()
+    
+    # Bind to LLM
+    model = ChatOpenAI(model="gpt-4o")
+    model_with_tools = model.bind_tools(tools)
+    
+    # Use tools (LLM will automatically choose the right one)
+    response = await model_with_tools.ainvoke([
+        {"role": "user", "content": "Get info about langchain-ai/langchain repo"}
+    ])
+    
+    print(response)
+
+asyncio.run(main())
+```
+
+### Example 4: Custom LangGraph Node
 
 ```python
 from config.mcp_client import get_tool_by_name
@@ -306,6 +442,16 @@ async def my_custom_node(state: GraphState) -> Dict[str, Any]:
     })
     
     return {"custom_data": result}
+```
+
+### Example 5: Run Custom Tools Example
+
+```bash
+# Terminal 1: Start the MCP server
+python server.py
+
+# Terminal 2: Run custom tools example
+python example_custom_tools.py
 ```
 
 ## Troubleshooting
