@@ -195,6 +195,11 @@ Desktop.ini
 *.db
 *.sqlite
 
+# OAuth tokens and sensitive data
+data/*
+!data/.gitkeep
+*_tokens.json
+
 # Temporary files
 *.tmp
 *.temp

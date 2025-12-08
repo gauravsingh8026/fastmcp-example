@@ -93,4 +93,4 @@ def site_search(query: str, domain: str, top_k: int = 5) -> List[Dict[str, Any]]
 	return web_search(query=query, top_k=top_k, include_domains=[domain])
 
 if __name__ == "__main__":
-   mcp.run(transport="http")
+   mcp.run(transport="http", port=int(get_env("MCP_SERVER_PORT", 8002)))

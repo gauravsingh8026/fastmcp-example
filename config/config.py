@@ -16,3 +16,12 @@ def get_timeout_seconds() -> int:
 		return max(1, int(val))
 	except Exception:
 		return 15
+
+
+def get_calendly_config() -> dict:
+	"""Get Calendly OAuth configuration"""
+	return {
+		"client_id": get_env("CALENDLY_CLIENT_ID"),
+		"client_secret": get_env("CALENDLY_CLIENT_SECRET"),
+		"redirect_uri": get_env("CALENDLY_REDIRECT_URI", "http://localhost:8000/calendly/auth/callback"),
+	}

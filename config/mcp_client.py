@@ -1,5 +1,5 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
-
+from config.config import get_env
 # MCP client configuration
 # Use stdio transport for local development
 # client = MultiServerMCPClient(
@@ -13,11 +13,18 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 # )
 
 # Alternative: Use HTTP transport if server is running separately
+environment = get_env("ENVIRONMENT", "dev")
+dev_env_url = f"http://localhost:{get_env('MCP_SERVER_PORT', 8002)}/mcp"
+prod_env_url = get_env("MCP_SERVER_URL",dev_env_url)
+if environment == "dev":
+    url = dev_env_url
+else:
+    url = prod_env_url
 client = MultiServerMCPClient(
     connections={
         "mcs-mcp-server": {
             "transport": "streamable_http",
-            "url": "http://localhost:8000/mcp"
+            "url": url
         }
     }
 )

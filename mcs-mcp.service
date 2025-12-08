@@ -1,0 +1,22 @@
+[Unit]
+Description=MCS MCP Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/mahiruho/mcs/mcs-mcp
+ExecStart=/home/mahiruho/mcs/mcs-mcp/venv/bin/python server.py
+Restart=always
+RestartSec=5
+
+# Environment (dotenv will load from .env file in WorkingDirectory)
+# If you need additional env vars, uncomment and add:
+# Environment=MCP_SERVER_PORT=8002
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
