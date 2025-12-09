@@ -3,17 +3,22 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import httpx
-import json
-from pathlib import Path
+import time
 from config.config import get_env
+
+# Import shared token management
+from utils.calendly_auth import (
+    save_tokens,
+    load_tokens,
+    delete_tokens,
+    get_valid_access_token,
+    get_connection_status
+)
 
 router = APIRouter(prefix="/calendly", tags=["calendly"])
 
 # Templates
 templates = Jinja2Templates(directory="templates")
-
-# Token storage path (simple file-based for now)
-TOKENS_FILE = Path("data/calendly_tokens.json")
 
 
 def get_calendly_credentials():
@@ -26,21 +31,6 @@ def get_calendly_credentials():
         raise ValueError("CALENDLY_CLIENT_ID and CALENDLY_CLIENT_SECRET must be set")
     
     return client_id, client_secret, redirect_uri
-
-
-def save_tokens(tokens: dict):
-    """Save tokens to file"""
-    TOKENS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(TOKENS_FILE, "w") as f:
-        json.dump(tokens, f, indent=2)
-
-
-def load_tokens() -> dict | None:
-    """Load tokens from file"""
-    if TOKENS_FILE.exists():
-        with open(TOKENS_FILE, "r") as f:
-            return json.load(f)
-    return None
 
 
 @router.get("", response_class=HTMLResponse)
@@ -143,6 +133,9 @@ async def calendly_auth_callback(
     
     tokens = response.json()
     
+    # Add created_at timestamp for expiry tracking
+    tokens["created_at"] = int(time.time())
+    
     # Save tokens
     save_tokens(tokens)
     
@@ -152,39 +145,46 @@ async def calendly_auth_callback(
 
 @router.get("/status")
 async def calendly_status():
-    """Check Calendly connection status"""
-    tokens = load_tokens()
+    """Check Calendly connection status with token health"""
+    # Get basic connection status
+    status = get_connection_status()
     
-    if not tokens or "access_token" not in tokens:
-        return {"connected": False}
+    if not status["connected"]:
+        return status
     
-    # Optionally verify token is still valid by calling Calendly API
+    # Try to get a valid token (will auto-refresh if needed)
+    try:
+        access_token = get_valid_access_token()
+    except RuntimeError as e:
+        return {
+            "connected": False,
+            "error": str(e)
+        }
+    
+    # Verify token by calling Calendly API
     async with httpx.AsyncClient() as client:
         response = await client.get(
             "https://api.calendly.com/users/me",
             headers={
-                "Authorization": f"Bearer {tokens['access_token']}"
+                "Authorization": f"Bearer {access_token}"
             }
         )
     
     if response.status_code == 200:
         user_data = response.json()
-        return {
-            "connected": True,
-            "user": user_data.get("resource", {}).get("name"),
-            "email": user_data.get("resource", {}).get("email")
-        }
+        status["user"] = user_data.get("resource", {}).get("name")
+        status["email"] = user_data.get("resource", {}).get("email")
+        return status
     else:
         return {
             "connected": False,
-            "error": "Token may be expired"
+            "error": "Token validation failed",
+            "status_code": response.status_code
         }
 
 
 @router.post("/disconnect")
 async def calendly_disconnect():
     """Disconnect Calendly (remove stored tokens)"""
-    if TOKENS_FILE.exists():
-        TOKENS_FILE.unlink()
-    
+    delete_tokens()
     return {"success": True, "message": "Calendly disconnected"}
