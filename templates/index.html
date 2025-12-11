@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCS-MCP Integrations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            color: #1a1a2e;
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .integrations {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .integration-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .integration-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon.calendly {
+            background: #006BFF;
+        }
+
+        .card-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .card-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .card-status.available {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .card-status.coming-soon {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MCS-MCP Integrations</h1>
+            <p class="subtitle">Connect third-party services to your MCP server</p>
+        </header>
+
+        <div class="integrations">
+            <a href="/calendly" class="integration-card">
+                <div class="card-header">
+                    <div class="card-icon calendly">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
+                        </svg>
+                    </div>
+                    <span class="card-title">Calendly</span>
+                </div>
+                <p class="card-description">
+                    Schedule meetings, check availability, and create events on behalf of your customers.
+                </p>
+                <span class="card-status available">Available</span>
+            </a>
+
+            <!-- Placeholder for future integrations -->
+            <div class="integration-card" style="opacity: 0.6; cursor: default;">
+                <div class="card-header">
+                    <div class="card-icon" style="background: #6c757d;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <span class="card-title">More Coming Soon</span>
+                </div>
+                <p class="card-description">
+                    Additional integrations like Slack, HubSpot, and more will be added here.
+                </p>
+                <span class="card-status coming-soon">Coming Soon</span>
+            </div>
+        </div>
+
+        <footer>
+            <p>MCS-MCP Server &bull; Web Interface for Integrations</p>
+        </footer>
+    </div>
+</body>
+</html>

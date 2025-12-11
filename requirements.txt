@@ -14,3 +14,10 @@ langgraph
 
 # MCP Client Adapter
 langchain-mcp-adapters
+
+# FastAPI Web App
+fastapi
+uvicorn[standard]
+httpx
+jinja2
+python-multipart

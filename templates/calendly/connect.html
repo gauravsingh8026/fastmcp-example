@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect to Calendly</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: #006BFF;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+
+        h1 {
+            color: #1a1a2e;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .status-badge.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.disconnected {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-badge.connected .status-dot {
+            background: #28a745;
+        }
+
+        .status-badge.disconnected .status-dot {
+            background: #ffc107;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #006BFF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056cc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 107, 255, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-left: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .info {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+        }
+
+        .info h3 {
+            color: #1a1a2e;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .info ul {
+            text-align: left;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
+            </svg>
+        </div>
+        
+        <h1>Calendly Integration</h1>
+        <p class="subtitle">Connect your Calendly account to enable scheduling automation through the MCP server.</p>
+        
+        {% if is_connected %}
+            <div class="status-badge connected">
+                <span class="status-dot"></span>
+                Connected
+            </div>
+            
+            <div class="actions">
+                <a href="/calendly/status" class="btn btn-secondary">Check Status</a>
+                <button onclick="disconnect()" class="btn btn-danger">Disconnect</button>
+            </div>
+        {% else %}
+            <div class="status-badge disconnected">
+                <span class="status-dot"></span>
+                Not Connected
+            </div>
+            
+            <a href="/calendly/auth/start" class="btn btn-primary">
+                Connect to Calendly
+            </a>
+        {% endif %}
+        
+        <div class="info">
+            <h3>What you can do after connecting:</h3>
+            <ul>
+                <li>List your event types</li>
+                <li>Check availability for scheduling</li>
+                <li>Create events on behalf of your customers</li>
+                <li>Manage scheduled meetings</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Check if we just connected
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('connected') === 'true') {
+            // Could show a toast notification here
+            console.log('Successfully connected to Calendly!');
+        }
+
+        async function disconnect() {
+            if (!confirm('Are you sure you want to disconnect Calendly?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/calendly/disconnect', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to disconnect');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
